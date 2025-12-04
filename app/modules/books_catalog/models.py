@@ -15,6 +15,7 @@ class Book(Base):
     author: Mapped[str] = mapped_column(String(255), nullable=False)
     year: Mapped[int] = mapped_column(Integer, nullable=False)
 
+
     # Связь с пользователями, которые добавили книгу
     user_books: Mapped[List["UserBook"]] = relationship(
         back_populates="book",

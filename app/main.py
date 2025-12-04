@@ -1,37 +1,19 @@
 from loguru import logger
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
+from app.api import api_router
 from app.core.config import settings
-from app.api.router import api_v1
-from app.core.db import engine, async_session_maker
-from app.modules.base.models import Base
-
-
-async def create_db_and_tables():
-    """Создание таблиц в базе данных"""
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("Таблицы базы данных созданы")
-    except Exception as e:
-        logger.error(f"Ошибка при создании таблиц: {e}")
-        raise
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info("Запуск приложения...")
-    await create_db_and_tables()
-    logger.info("Приложение запущено")
-    
-    yield
-    
-    # Shutdown
-    logger.info("Остановка приложения...")
-    await engine.dispose()
-    logger.info("Приложение остановлено")
+async def lifespan(app: FastAPI):    
+    try:
+        logger.info("Startup: Completed")
+        yield
+    finally:
+        logger.info("Shutdown: Completed")
 
 
 app = FastAPI(
@@ -41,15 +23,51 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Подключаем роутеры
-app.include_router(api_v1)
+# Настройка CORS
+# Определяем разрешенные источники - включаем все возможные варианты localhost
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+]
+
+if hasattr(settings, 'FRONT_SITE') and settings.FRONT_SITE:
+    if isinstance(settings.FRONT_SITE, str):
+        if settings.FRONT_SITE not in allowed_origins:
+            allowed_origins.append(settings.FRONT_SITE)
+    else:
+        allowed_origins.extend(settings.FRONT_SITE)
+
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешаем все методы включая OPTIONS
+    allow_headers=["*"],  # Разрешаем все заголовки
+    expose_headers=["*"],
+    max_age=3600,  # Кэширование preflight запросов на 1 час
+)
+
+app.include_router(api_router)
 
 
+# Базовые эндпоинты
 @app.get("/")
 async def root():
-    return {"message": "Добро пожаловать в Каталог прочитанных книг!"}
+    return {
+        "message": "Добро пожаловать в Каталог прочитанных книг!",
+        "docs": "/docs",
+        "version": "1.0.0"
+    }
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    """Эндпоинт для проверки здоровья приложения"""
+    return {
+        "status": "healthy",
+        "service": "Каталог прочитанных книг"
+    }

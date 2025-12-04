@@ -1,4 +1,5 @@
 import os
+from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import computed_field
 
@@ -21,15 +22,23 @@ class Settings(BaseSettings):
         )
 
     # JWT
-    SECRET_KEY: str = "your-very-long-and-secure-secret-key-for-jwt-tokens"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
+    ###########################
+    # ПУТИ
+    ###########################
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    ENV_DIR: str = os.path.join(BASE_DIR, ".env")
+    LOGS_DIR: str = os.path.join(BASE_DIR, "logs/")
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8"
+        env_file=ENV_DIR
     )
 
-
+# Инициализация настроек
 settings = Settings()
 database_url = settings.DB_URL
+
+def get_auth_data():
+    return {"secret_key": settings.SECRET_KEY, "algorithm": settings.ALGORITHM}

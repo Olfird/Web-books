@@ -1,7 +1,7 @@
 from app.modules.base import Base
 from typing import List, TYPE_CHECKING
-from sqlalchemy import Integer, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String, Boolean, ForeignKey, DateTime
 from datetime import datetime
 
 if TYPE_CHECKING:
@@ -9,16 +9,15 @@ if TYPE_CHECKING:
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    # Убираем email поле
+    username: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    # Связь с книгами пользователя
+    # Связь с книгами
     user_books: Mapped[List["UserBook"]] = relationship(
         back_populates="user",
         lazy="selectin",

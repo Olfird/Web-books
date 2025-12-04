@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import BookOut, BookCreate, AddBookOut
-from app.core.sessionmaker_fastapi import db_sessions
+from app.core import db_sessions
 from .service import BookService
 
 

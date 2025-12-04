@@ -1,53 +1,96 @@
 <template>
-  <header>
-    <div class="header-content">
-      <div class="logo">BookHub</div>
-      <div class="nav-links">
-        <router-link to="/content">Главная</router-link>
-        <router-link to="/books">Библиотека</router-link>
-        <router-link v-if="isAuthenticated" to="/my-books">Мои книги</router-link>
-        <router-link v-else to="/auth">Вход</router-link>
-        <button v-if="isAuthenticated" @click="logout" class="logout-btn">Выйти</button>
-        <span v-if="isAuthenticated" class="username">Привет, {{ username }}!</span>
+  <div id="app">
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">BookHub</div>
+          <nav>
+            <ul class="nav-links">
+              <li><router-link to="/content">Главная</router-link></li>
+              <li><router-link to="/books">Библиотека</router-link></li>
+              
+              <!-- Динамическая ссылка -->
+              <li v-if="!isAuthenticated">
+                <router-link to="/auth">Вход/Регистрация</router-link>
+              </li>
+              <li v-else>
+                <router-link to="/my-books">Мои книги</router-link>
+              </li>
+              
+              <!-- Кнопка выхода -->
+              <li v-if="isAuthenticated">
+                <a href="#" @click.prevent="logout" class="logout-btn">Выйти</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main>
-    <router-view />
-  </main>
+    <router-view @login="handleLogin" />
 
-  <footer>
-    <div class="container">
-      <p>Каталог прочитанных книг © 2024</p>
-    </div>
-  </footer>
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 BookHub. Все права защищены.</p>
+      </div>
+    </footer>
+  </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
+<script>
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { authApi } from './api/auth'
 
-const router = useRouter()
-const username = ref('')
+export default {
+  name: 'App',
+  setup() {
+    const router = useRouter()
+    const isAuthenticated = ref(false)
 
-const isAuthenticated = computed(() => {
-  return authApi.isAuthenticated()
-})
+    // Функция проверки авторизации
+    const checkAuth = () => {
+      const token = localStorage.getItem('access_token')
+      isAuthenticated.value = !!token
+    }
 
-// При загрузке получаем имя пользователя
-onMounted(() => {
-  const user = authApi.getUserFromToken()
-  if (user) {
-    username.value = user.username
+    // Логин
+    const handleLogin = () => {
+      isAuthenticated.value = true
+      router.push('/books')
+    }
+
+    // Логаут
+    const logout = () => {
+      localStorage.removeItem('access_token')
+      isAuthenticated.value = false
+      router.push('/auth')
+    }
+
+    // Следим за изменениями маршрута
+    watch(() => router.currentRoute.value, () => {
+      checkAuth()
+    })
+
+    onMounted(() => {
+      checkAuth()
+    })
+
+    return {
+      isAuthenticated,
+      handleLogin,
+      logout
+    }
   }
-})
-
-// Выход из системы
-const logout = () => {
-  authApi.logout()
-  username.value = ''
-  router.push('/auth')
 }
 </script>
+
+<style scoped>
+.logout-btn {
+  color: #ff6b6b !important;
+  margin-left: 20px !important;
+}
+
+.logout-btn:hover {
+  color: #ff3838 !important;
+}
+</style>

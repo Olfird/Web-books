@@ -1,23 +1,18 @@
-import apiClient from './index'
+import api from './index.js';
 
-export const usersApi = {
-  // Регистрация нового пользователя
-  register(userData) {
-    return apiClient.post('/users/', userData)
+export const usersAPI = {
+  // Получить профиль текущего пользователя
+  getProfile() {
+    return api.get('/users/me');
   },
 
-  // Получение информации о текущем пользователе
-  getCurrentUser() {
-    return apiClient.get('/users/me')
-  },
-
-  // Добавление книги в профиль пользователя
+  // Добавить книгу в профиль
   addBookToProfile(bookId) {
-    return apiClient.post(`/users/me/books/${bookId}`)
+    return api.post(`/users/me/books/${bookId}`);
   },
 
-  // Удаление книги из профиля пользователя
+  // Удалить книгу из профиля
   removeBookFromProfile(bookId) {
-    return apiClient.delete(`/users/me/books/${bookId}`)
+    return api.delete(`/users/me/books/${bookId}`);
   }
-}
+};

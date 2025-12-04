@@ -1,22 +1,28 @@
-from pydantic import BaseModel, ConfigDict
-from typing import List
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional
 from datetime import datetime
 
 
-class UserBase(BaseModel):
-    username: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UserCreate(BaseModel):
-    username: str
-    password: str
+class RegisterIn(BaseModel):
+    username: str = Field(..., min_length=3, max_length=64)
+    password: str = Field(..., min_length=6, max_length=128)
 
 
-class UserOut(UserBase):
+class LoginIn(BaseModel):
+    username: str = Field(..., min_length=3, max_length=64)
+    password: str = Field(..., min_length=6, max_length=128)
+
+
+class TokenOut(BaseModel):
+    access_token: str
+
+
+class UserOut(BaseModel):
     id: int
+    username: str
     is_active: bool
+    
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBookOut(BaseModel):
@@ -24,7 +30,7 @@ class UserBookOut(BaseModel):
     book_id: int
     user_id: int
     added_at: datetime
-
+    
     model_config = ConfigDict(from_attributes=True)
 
 

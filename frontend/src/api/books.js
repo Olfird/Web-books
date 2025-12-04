@@ -1,18 +1,28 @@
-import apiClient from './index'
+import api from './index.js';
 
-export const booksApi = {
-  // Получение всех книг из каталога
+export const booksAPI = {
+  // Получить все книги
   getAllBooks() {
-    return apiClient.get('/books_catalog/')
+    return api.get('/books_catalog/');
   },
 
-  // Получение одной книги по ID
-  getBookById(id) {
-    return apiClient.get(`/books_catalog/${id}`)
+  // Получить конкретную книгу
+  getBookById(bookId) {
+    return api.get(`/books_catalog/${bookId}`);
   },
 
-  // Добавление новой книги в каталог (если нужно админом)
+  // Добавить новую книгу
   addBook(bookData) {
-    return apiClient.post('/books_catalog/', bookData)
+    return api.post('/books_catalog/', bookData);
+  },
+
+  // Удалить книгу (если есть такой эндпоинт)
+  deleteBook(bookId) {
+    return api.delete(`/books_catalog/${bookId}`);
+  },
+
+  // Обновить книгу (если есть такой эндпоинт)
+  updateBook(bookId, bookData) {
+    return api.put(`/books_catalog/${bookId}`, bookData);
   }
-}
+};
