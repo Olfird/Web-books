@@ -32,7 +32,7 @@ class UserBook(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     book_id: Mapped[int] = mapped_column(Integer, ForeignKey("books.id"), nullable=False)
     added_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
+    
     # Связи
     user: Mapped["User"] = relationship(back_populates="user_books")
     book: Mapped["Book"] = relationship(back_populates="user_books")

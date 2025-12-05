@@ -21,6 +21,17 @@ export const booksAPI = {
     return api.delete(`/books_catalog/${bookId}`);
   },
 
+  uploadBookImage(bookId, imageFile) {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    
+    return api.post(`/books_catalog/${bookId}/upload-image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
   // Обновить книгу (если есть такой эндпоинт)
   updateBook(bookId, bookData) {
     return api.put(`/books_catalog/${bookId}`, bookData);

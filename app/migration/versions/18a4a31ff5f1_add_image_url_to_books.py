@@ -20,9 +20,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    pass
+    # Добавляем поле image_url в таблицу books
+    op.add_column('books', sa.Column('image_url', sa.String(length=500), nullable=True))
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    pass
+    # Удаляем поле image_url из таблицы books
+    op.drop_column('books', 'image_url')

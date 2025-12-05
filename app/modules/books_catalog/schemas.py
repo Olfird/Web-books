@@ -1,10 +1,11 @@
 from pydantic import BaseModel, field_validator, ConfigDict
-
+from typing import Optional
 
 class BookBase(BaseModel):
     title: str
     author: str
     year: int
+    image_url: Optional[str] = None
 
     @field_validator('year')
     @classmethod

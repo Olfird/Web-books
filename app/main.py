@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import api_router
 from app.core.config import settings
-
+from fastapi.staticfiles import StaticFiles
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):    
@@ -52,7 +52,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
-
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Базовые эндпоинты
 @app.get("/")
