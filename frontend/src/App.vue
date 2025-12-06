@@ -9,7 +9,6 @@
               <li><router-link to="/content">Главная</router-link></li>
               <li><router-link to="/books">Библиотека</router-link></li>
               
-              <!-- Динамическая ссылка -->
               <li v-if="!isAuthenticated">
                 <router-link to="/auth">Вход/Регистрация</router-link>
               </li>
@@ -17,7 +16,6 @@
                 <router-link to="/my-books">Мои книги</router-link>
               </li>
               
-              <!-- Кнопка выхода -->
               <li v-if="isAuthenticated">
                 <a href="#" @click.prevent="logout" class="logout-btn">Выйти</a>
               </li>
@@ -26,12 +24,12 @@
         </div>
       </div>
     </header>
-
-    <router-view @login="handleLogin" />
-
+    <main>
+      <router-view @login="handleLogin" />
+    </main>
     <footer>
       <div class="container">
-        <p>&copy; 2024 BookHub. Все права защищены.</p>
+        <p class="footer">&copy; BookHub. Собирай любимые произведения.</p>
       </div>
     </footer>
   </div>
@@ -53,20 +51,17 @@ export default {
       isAuthenticated.value = !!token
     }
 
-    // Логин
     const handleLogin = () => {
       isAuthenticated.value = true
       router.push('/books')
     }
 
-    // Логаут
     const logout = () => {
       localStorage.removeItem('access_token')
       isAuthenticated.value = false
       router.push('/auth')
     }
 
-    // Следим за изменениями маршрута
     watch(() => router.currentRoute.value, () => {
       checkAuth()
     })
@@ -86,11 +81,11 @@ export default {
 
 <style scoped>
 .logout-btn {
-  color: #ff6b6b !important;
-  margin-left: 20px !important;
+  color: #ff6b6b;
+  margin-left: 20px;
 }
 
 .logout-btn:hover {
-  color: #ff3838 !important;
+  color: #ff3838;
 }
 </style>

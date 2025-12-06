@@ -4,16 +4,10 @@
       <div class="auth-container">
         <div class="card">
           <div class="auth-tabs">
-            <button 
-              :class="['auth-tab', { 'active': activeTab === 'login' }]" 
-              @click="activeTab = 'login'"
-            >
+            <button :class="['auth-tab', { 'active': activeTab === 'login' }]" @click="activeTab = 'login'">
               Вход
             </button>
-            <button 
-              :class="['auth-tab', { 'active': activeTab === 'register' }]" 
-              @click="activeTab = 'register'"
-            >
+            <button :class="['auth-tab', { 'active': activeTab === 'register' }]" @click="activeTab = 'register'">
               Регистрация
             </button>
           </div>
@@ -22,25 +16,11 @@
           <form v-if="activeTab === 'login'" @submit.prevent="handleLogin" class="auth-form">
             <div class="form-group">
               <label for="login-username">Имя пользователя</label>
-              <input 
-                type="text" 
-                id="login-username" 
-                v-model="loginData.username" 
-                required
-              />
+              <input type="text" v-model="loginData.username" />
             </div>
             <div class="form-group">
               <label for="login-password">Пароль</label>
-              <input 
-                type="password" 
-                id="login-password" 
-                v-model="loginData.password" 
-                required
-              />
-            </div>
-            
-            <div v-if="loginError" class="error-message">
-              {{ loginError }}
+              <input type="password" v-model="loginData.password" />
             </div>
             
             <button type="submit" class="btn" :disabled="loginLoading">
@@ -52,30 +32,15 @@
           <form v-if="activeTab === 'register'" @submit.prevent="handleRegister" class="auth-form">
             <div class="form-group">
               <label for="register-username">Имя пользователя</label>
-              <input 
-                type="text" 
-                id="register-username" 
-                v-model="registerData.username" 
-                required
-              />
+              <input type="text" v-model="registerData.username" />
             </div>
             <div class="form-group">
               <label for="register-password">Пароль</label>
-              <input 
-                type="password" 
-                id="register-password" 
-                v-model="registerData.password" 
-                required
-              />
+              <input type="password" v-model="registerData.password" />
             </div>
             <div class="form-group">
               <label for="confirm-password">Подтвердите пароль</label>
-              <input 
-                type="password" 
-                id="confirm-password" 
-                v-model="registerData.confirmPassword" 
-                required
-              />
+              <input type="password" v-model="registerData.confirmPassword" />
             </div>
             
             <div v-if="registerError" class="error-message">
@@ -138,14 +103,11 @@ export default {
         
         localStorage.setItem('access_token', response.data.access_token)
         
-        // Вызываем событие для обновления App.vue
         emit('login')
         
-        // Перенаправляем на страницу библиотеки
         router.push('/books')
         
       } catch (error) {
-        console.error('Login error:', error)
         loginError.value = error.response?.data?.detail?.[0]?.msg || 
                           error.response?.data?.detail || 
                           'Ошибка входа. Проверьте данные.'
@@ -155,7 +117,6 @@ export default {
     }
 
     const handleRegister = async () => {
-      // Проверка паролей
       if (registerData.value.password !== registerData.value.confirmPassword) {
         registerError.value = 'Пароли не совпадают'
         return
@@ -180,7 +141,6 @@ export default {
           confirmPassword: ''
         }
         
-        // Переключаем на вкладку входа
         setTimeout(() => {
           activeTab.value = 'login'
           registerSuccess.value = false

@@ -7,10 +7,10 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Добавляем поддержку cookies, если используется
+  withCredentials: true,
 });
 
-// Интерцептор для добавления токена
+// Добавления токена
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   
@@ -26,7 +26,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Если ошибка 401, очищаем токен и перенаправляем на страницу входа
+      // Если ошибка 401, очищаем токен
       localStorage.removeItem('access_token');
       window.location.href = '/auth';
     }

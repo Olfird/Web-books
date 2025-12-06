@@ -16,11 +16,6 @@ export const booksAPI = {
     return api.post('/books_catalog/', bookData);
   },
 
-  // Удалить книгу (если есть такой эндпоинт)
-  deleteBook(bookId) {
-    return api.delete(`/books_catalog/${bookId}`);
-  },
-
   uploadBookImage(bookId, imageFile) {
     const formData = new FormData();
     formData.append('file', imageFile);
@@ -32,8 +27,4 @@ export const booksAPI = {
     });
   },
 
-  // Обновить книгу (если есть такой эндпоинт)
-  updateBook(bookId, bookData) {
-    return api.put(`/books_catalog/${bookId}`, bookData);
-  }
 };

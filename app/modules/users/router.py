@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload, joinedload
 
 from app.core.deps import get_current_user
 from app.core import db_sessions
-from .models import User
+from .models import User, UserBook
 from .service import UserService
 from .schemas import UserOut, UserWithBooksOut
 
@@ -16,15 +18,25 @@ async def get_profile(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(db_sessions.get_db)
 ):
-    svc = UserService(session)
-    user_books = await svc.get_user_books(current_user.id)
-    
-    return UserWithBooksOut(
-        id=current_user.id,
-        username=current_user.username,
-        is_active=current_user.is_active,
-        user_books=user_books
+    # Получаем пользователя с его книгами и данными книг
+    result = await session.execute(
+        select(User)
+        .options(
+            selectinload(User.user_books)
+            .joinedload(UserBook.book)
+        )
+        .where(User.id == current_user.id)
     )
+    
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден"
+        )
+    
+    return user
 
 
 @router.post('/me/books/{book_id}')

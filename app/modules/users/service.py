@@ -1,9 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload, joinedload
 from fastapi import HTTPException, status
 
 from .dao import UserBookDAO
 from .models import UserBook
+from app.modules.books_catalog.models import Book
 
 
 class UserService:
@@ -47,4 +50,10 @@ class UserService:
         return True
 
     async def get_user_books(self, user_id: int) -> list[UserBook]:
-        return await UserBookDAO.find_all(self.session, user_id=user_id)
+        # Загружаем UserBook вместе с данными книги
+        result = await self.session.execute(
+            select(UserBook)
+            .options(joinedload(UserBook.book))
+            .where(UserBook.user_id == user_id)
+        )
+        return result.scalars().all()

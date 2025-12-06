@@ -25,6 +25,28 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# Схема для книги
+class BookOut(BaseModel):
+    id: int
+    title: str
+    author: str
+    year: int
+    image_url: Optional[str] = None
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Схема для связи пользователь-книга С данными книги
+class UserBookWithBookOut(BaseModel):
+    id: int
+    book_id: int
+    user_id: int
+    added_at: datetime
+    book: Optional[BookOut] = None
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
 class UserBookOut(BaseModel):
     id: int
     book_id: int
@@ -35,4 +57,4 @@ class UserBookOut(BaseModel):
 
 
 class UserWithBooksOut(UserOut):
-    user_books: List[UserBookOut] = []
+    user_books: List[UserBookWithBookOut] = [] 

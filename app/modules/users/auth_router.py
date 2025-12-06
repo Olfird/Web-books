@@ -21,10 +21,10 @@ async def register_user(
             detail='Пользователь уже существует'
         )
     
-    # Хэшируем пароль
+
     user_dict = user_data.model_dump()
     user_dict['hashed_password'] = get_password_hash(user_data.password)
-    user_dict.pop('password')  # Удаляем plain password
+    user_dict.pop('password')
     
     await UserDAO.add(session, **user_dict)
     return {'message': 'Вы успешно зарегистрированы!'}
